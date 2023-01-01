@@ -23,4 +23,15 @@ RSpec.describe 'Integration' do
       expect(JSON.parse(output)).to eq(expected__output)
     end
   end
+
+  context 'level 3' do
+    it 'outputs the correct values' do
+      expected__output = File.open('./lib/level3/data/expected_output.json') do |f|
+        JSON.parse(f.read)
+      end
+      output = `ruby ./lib/level3/main.rb level3/data/input.json`
+
+      expect(JSON.parse(output)).to eq(expected__output)
+    end
+  end
 end

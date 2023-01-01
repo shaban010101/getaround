@@ -2,10 +2,15 @@ require 'date'
 require 'json'
 
 class CostCalculator
-  def initialize(cars, rentals, apply_discounts: false)
+  def initialize(cars,
+                 rentals,
+                 apply_discounts: false,
+                 calculate_commission: false)
+
     @cars = cars
     @rentals = rentals
     @apply_discounts = apply_discounts
+    @calculate_commission = calculate_commission
   end
 
   def call
@@ -16,17 +21,27 @@ class CostCalculator
       cost_per_days = CostPerDay.new(car, rental, apply_discounts: apply_discounts).call
 
       cost_for_distance = car.price_per_km * rental.distance
+      price = (cost_per_days + cost_for_distance)
 
-      {
-        "id" => rental.id,
-        "price" => (cost_per_days + cost_for_distance)
+      rental_output = {
+        id: rental.id,
+        price: price,
       }
+
+      if calculate_commission
+        rental_output = rental_output.merge!(
+          CalculateCommission.new(price, rental).call
+        )
+      end
+
+      rental_output
     end
+
     JSON.generate(rentals_output)
   end
 
   private
-  attr_reader :apply_discounts, :cars, :rentals
+  attr_reader :apply_discounts, :cars, :rentals, :calculate_commission
 
   class CostPerDay
     def initialize(car, rental, apply_discounts:)
@@ -66,5 +81,31 @@ class CostCalculator
     end
 
     attr_reader :apply_discounts, :car, :rental
+  end
+
+  class CalculateCommission
+    def initialize(price, rental)
+      @price = price
+      @rental = rental
+    end
+
+    def call
+      commission_amount = price * 0.30
+      insurance_fee = (commission_amount * 0.5).to_i
+      days = (Date.parse(rental.start_date)..Date.parse(rental.end_date)).count
+      assistance_fee = (days * 100)
+      drivy_fee = (commission_amount - (insurance_fee + assistance_fee)).to_i
+
+      {
+        commission: {
+          insurance_fee:  insurance_fee,
+          assistance_fee: assistance_fee,
+          drivy_fee:      drivy_fee
+        }
+      }
+    end
+
+    private
+    attr_reader :price, :rental
   end
 end
