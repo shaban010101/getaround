@@ -1,24 +1,24 @@
 # frozen_string_literal: true
 
 require './spec/spec_helper'
-require './lib/cost_calculator'
-require './lib/car'
-require './lib/rental'
+require './lib/services/cost_calculator'
+require './lib/models/car'
+require './lib/models/rental'
 
 RSpec.describe CostCalculator do
   subject(:calculate) do
     described_class.new(
       cars,
       rentals,
-      apply_discounts: apply_discounts,
+      apply_discounts: apply_discounts
     )
   end
   let(:rentals) do
     [
       Rental.new(id: 1,
                  car_id: 1,
-                 start_date: "2015-07-3",
-                 end_date: "2015-07-14",
+                 start_date: '2015-07-3',
+                 end_date: '2015-07-14',
                  distance: 1000)
     ]
   end
@@ -31,14 +31,14 @@ RSpec.describe CostCalculator do
 
   describe 'call' do
     it 'outputs the cost of rentals' do
-      expect(calculate.call).to eq(JSON.generate({rentals: [{ id: 1, price: 34000}]}))
+      expect(calculate.call).to eq(JSON.generate({ rentals: [{ id: 1, price: 34_000 }] }))
     end
 
     context 'when discounts are applied' do
       let(:apply_discounts) { true }
 
-      it 'outputs the cost of rentals' do
-        expect(calculate.call).to eq(JSON.generate({rentals: [{ id: 1, price: 27800}]}))
+      it 'outputs the cost of the rentals' do
+        expect(calculate.call).to eq(JSON.generate({ rentals: [{ id: 1, price: 27_800 }] }))
       end
     end
   end

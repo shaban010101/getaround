@@ -6,6 +6,7 @@ git_source(:github) { |repo_name| "https://github.com/#{repo_name}" }
 
 group :test do
   gem 'rspec'
+  gem 'rspec-json_expectations'
 end
 
 group :development, :test do
@@ -17,4 +18,3 @@ group :development do
 end
 
 gem 'activemodel', '~> 6.1.4'
-

@@ -1,6 +1,8 @@
-require_relative '../car'
-require_relative '../rental'
-require_relative '../credits_and_debits_presenter'
+# frozen_string_literal: true
+
+require_relative '../models/cars'
+require_relative '../models/rentals'
+require_relative '../presenters/credits_and_debits_presenter'
 require 'json'
 
 file_name = ARGV[0]
@@ -9,24 +11,10 @@ input = File.open(input_file) do |f|
   JSON.parse(f.read)
 end.deep_symbolize_keys!
 
-cars = input[:cars].map do |car|
-  Car.new(
-    id: car[:id],
-    price_per_day: car[:price_per_day],
-    price_per_km: car[:price_per_km]
-  )
-end
+cars = Cars.new(input[:cars]).output
 
-rentals = input[:rentals].map do |rental|
-  Rental.new(
-    id: rental[:id],
-    car_id: rental[:car_id],
-    start_date: rental[:start_date],
-    end_date: rental[:end_date],
-    distance: rental[:distance]
-  )
-end
+rentals = Rentals.new(input[:rentals]).output
 
 result = CreditsAndDebitsPresenter.new(cars, rentals)
 
-puts result.call
+File.write('lib/level4/data/output.json', result.call, mode: 'w')

@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 require './spec/spec_helper'
-require './lib/car'
-require './lib/rental'
-require './lib/calculate_credits_and_debits'
+require './lib/models/car'
+require './lib/models/rental'
+require './lib/services/calculate_credits_and_debits'
 
 RSpec.describe CalculateCreditsAndDebits do
   describe '#call' do
