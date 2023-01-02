@@ -1,6 +1,6 @@
 require_relative '../car'
 require_relative '../rental'
-require_relative '../cost_calculator'
+require_relative '../commission_presenter'
 require 'json'
 
 file_name = ARGV[0]
@@ -27,6 +27,4 @@ rentals = input[:rentals].map do |rental|
   )
 end
 
-result = CostCalculator.new(cars, rentals, apply_discounts: true, calculate_commission: true)
-
-puts result.call
+puts CommissionPresenter.new(cars, rentals).call
